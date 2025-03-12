@@ -1,0 +1,122 @@
+## Before you starting
+
+Obtain GAME_ID, GAME_SECRET and gateway url (10.1.15.141 for a test.genomeprotocol.com) from Genome
+
+
+## Users linkage:
+POST query to gateway/auth/link-external-user with JSON-encoded body
+```
+{internalToken: ..., externalToken: ...}
+```
+
+
+
+Socket interactions:
+
+1. Connect by websocket to port gateway:3020 with token 
+```
+jwt.encode({"gameId": GAME_ID}, GAME_SECRET, algorithm="HS256")
+```
+
+2) Tournament joining:
+
+2.1) Semi-OAuth mechanism for user linkage:
+
+2.1.1) Genome is redirecting user to a game server with aka-OAuth, so user should log in and be redirected back with
+GET-param token=
+
+2.1.2) User is redirected to  gateway/auth/link-external-user with JSON-encoded body
+```
+{internalToken: ..., externalToken: ...}
+```
+
+
+
+2.1.3) 
+```
+
+```
+
+
+Наш бэкенд верифицирует токены (внутренний - https://gitlab.ent-dx.com/disruption/dx-token-service/-/blob/dev/src/modules/token/services/token.service.ts?ref_type=heads#L115, внешний - https://gitlab.ent-dx.com/disruption/dx-token-service/-/blob/dev/src/modules/token/services/token.service.ts?ref_type=heads#L160) и создает сопоставление (https://gitlab.ent-dx.com/disruption/dx-user-service/-/blob/dev/src/modules/user/services/user.service.ts?ref_type=heads#L462);
+
+2.2) Tournaments is created, saved to blockchain
+
+2.2.1) Genome sends tournament create event - scheduleLoad
+```
+    {
+        playersInTeamCount: number;
+        maxTeams: number;
+        minTeamsInMatch: number;
+        maxTeamsInMatch: number;
+        maxMatches: number;
+        gameId: string;
+        starts: number;
+    }
+
+```
+2.2.2 Also genome sends games creating event startGame
+
+```
+  gameId: string;
+  games: {
+    gameId: string;
+    matchId: string;
+    tournamentId?: string;
+    gameServerId?: string;    
+    backUrl: string;
+    rivals: {
+      players: string[];
+    }[];
+  }[];
+
+```
+
+2.3.1) Waiting for events from the master server:
+
+2.3.2) gameStarted 
+
+```
+{
+  gameId: string;
+  matchId: string;
+  tournamentId?: string;
+  gameServerId?: string;
+  timestamp: number;
+}
+```
+
+2.3.3) gameEnded 
+
+```
+{
+  gameId: string;
+  matchId: string;
+  tournamentId?: string;
+  gameServerId?: string;
+  winners: {
+    [index: number]: {
+      players: string[];
+      scores: number[];
+    };
+  };
+}
+
+```
+2.3.4) gameCancelled
+
+```
+{
+  gameId: string;
+  matchId: string;
+  tournamentId?: string;
+  gameServerId?: string;
+}
+
+```
+
+3) Дополнительно:
+
+3.1) Между различными взаимойдествиями может быть необходима конвертация идентификаторов игроков (прим. https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/external-api/controllers/event.controller.ts?ref_type=heads#L53);
+
+3.2) События с игры поступают на те же микросервисные пути, что и события с внутренних игр.

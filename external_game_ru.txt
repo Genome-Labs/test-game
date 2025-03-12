@@ -1,0 +1,41 @@
+Полный путь взаимодействия платформы, внешней игры и пользователя
+
+Подготовка взаимодействия:
+
+1) Добавляем игру в сиды (https://gitlab.ent-dx.com/disruption/dx-game/-/blob/dev/src/game/infrastructure/seeds/game.seeds.json?ref_type=heads) игросервиса (нужен редеплой сервиса для добавления в БД);
+
+2) Добавляем секрет в переменные окружения и идентификатор игры в сопоставление токен-сервиса (https://gitlab.ent-dx.com/disruption/dx-token-service/-/blob/dev/src/modules/token/services/token.service.ts?ref_type=heads#L161);
+
+Взаимодействие с сервером игры:
+
+1) Установка соединения и верификация токена (https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/external-api/gateway/socket.gateway.ts?ref_type=heads#L42) - инициируется со стороны игры;
+
+2) В контексте турниров:
+
+2.1) Перед подключением (join) в турнир с внешней игрой, пользователь должен произвести линковку:
+
+2.1.1) Пользователя перекидывает в игру (с токеном нашей платформы), там он должен авторизоваться;
+
+2.1.2) Если пользователь успешно авторизовался, то его перекидывает на нашу платформу с токеном игры (токен пользователя от игры), наш фронтенд дергает роут линковки (https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/auth/controllers/auth.controller.ts?ref_type=heads#L56), в объекте запроса наш внутренний токен и внешний токен игры (https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/external-api/dto/link-by-tokens.dto.ts?ref_type=heads);
+
+2.1.3) Наш бэкенд верифицирует токены (внутренний - https://gitlab.ent-dx.com/disruption/dx-token-service/-/blob/dev/src/modules/token/services/token.service.ts?ref_type=heads#L115, внешний - https://gitlab.ent-dx.com/disruption/dx-token-service/-/blob/dev/src/modules/token/services/token.service.ts?ref_type=heads#L160) и создает сопоставление (https://gitlab.ent-dx.com/disruption/dx-user-service/-/blob/dev/src/modules/user/services/user.service.ts?ref_type=heads#L462);
+
+2.2) Создание турнира -> подтверждение турнира с БЧ и далее:
+
+2.2.1) Оповещение игры о создании турнира (позволяет подготовить комнату - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/tournament.creation.service.ts?ref_type=heads#L154);
+
+2.2.2) При старте турнира происходит создание матчей и оповещение внешней игры о них (https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/matchmaking.creation.service.ts?ref_type=heads#L223);
+
+2.3.1) Далее, мы лишь ожидаем события от игры (https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/external-api/gateway/socket.gateway.ts?ref_type=heads):
+
+2.3.2) gameStarted - начало игры (матча), устанавливаем матчу турнира метку старта (https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/external-api/controllers/event.controller.ts?ref_type=heads#L35, https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/matchmaking.starting.service.ts?ref_type=heads#L19);
+
+2.3.3) gameEnded - окончание игры (матча), устанавливаем метку окончания и победителей для матча (https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/external-api/controllers/event.controller.ts?ref_type=heads#L71);
+
+2.3.4) gameCancelled - Возможное событие, устанавливаем метку окончания и ставим метку отмены матча;
+
+3) Дополнительно:
+
+3.1) Между различными взаимойдествиями может быть необходима конвертация идентификаторов игроков (прим. https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/external-api/controllers/event.controller.ts?ref_type=heads#L53);
+
+3.2) События с игры поступают на те же микросервисные пути, что и события с внутренних игр.
