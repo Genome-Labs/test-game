@@ -3,8 +3,10 @@ from https://zerosum-2.gitbook.io/zerosum-integration-guide/rm4tYOVXNiq3bgKnvVkl
 
 ```
 db.game.findOne({_id: "game_id_1"})
-db.game.updateOne({_id: "game_id_1"}, {$set: {visible: true, active: true}})
+db.game.updateOne({_id: "game_id_1"}, {$set: {visible: false, active: true}})
 ```
 
-
-npx ts-node src/auth.ts login1 login2 login3
+Please change logins before running the command
+```
+npx ts-node src/auth.ts dev_login1 dev_login2
+```

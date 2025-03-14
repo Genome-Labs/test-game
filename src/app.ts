@@ -7,7 +7,7 @@ import { setTimeout as sleep} from 'node:timers/promises';
 async function main() {
     console.log(`Starting Game Stub`);
     const client = io(Env.GAME_API_URL, {
-        // transports: ['websocket'],
+        path: Env.GAME_API_PATH,
         auth: {
             token: signPayload(AuthTokenPayload.parse({ gameId: Env.GAME_ID })),
         },
