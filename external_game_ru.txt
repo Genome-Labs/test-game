@@ -39,3 +39,20 @@
 3.1) Между различными взаимойдествиями может быть необходима конвертация идентификаторов игроков (прим. https://gitlab.ent-dx.com/disruption/dx-gateway/-/blob/dev/src/modules/external-api/controllers/event.controller.ts?ref_type=heads#L53);
 
 3.2) События с игры поступают на те же микросервисные пути, что и события с внутренних игр.
+
+
+Вместе с блокчейном (tournament.puml) - 
+После обработки события регистрации турнирным сервисом - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]w/tournament.participants-register.service.ts?ref_type=heads
+Метод проверки старта - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]ices/fast-flow/tournament.starting.service.ts?ref_type=heads
+После обновления с бч, ставит турнир в очередь старта - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]onsumers/tournaments.update-by-bc.consumer.ts?ref_type=heads
+Метод старта турнира на БЧ - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]ices/fast-flow/tournament.starting.service.ts?ref_type=heads
+Используется в методе старта - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]ices/fast-flow/tournament.starting.service.ts?ref_type=heads
+Обработка очереди старта - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]ments/consumers/tournaments.start.consumer.ts?ref_type=heads
+Старт матча на внешнем апи - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]ces/fast-flow/matchmaking.creation.service.ts?ref_type=heads
+Установка метки старта - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/controllers/match.controller.ts?ref_type=heads#L42 (edited) 
+Установка метки окончания матча - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/controllers/match.controller.ts?ref_type=heads#L34
+Окончание турнира, после установки победителя (с проверками) - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]vices/fast-flow/matchmaking.ending.service.ts?ref_type=heads
+Окончание турнира на БЧ-сервисе - https://gitlab.ent-dx.com/disruption/dx-blockchain-service/-/blob/dev/src/controllers/call.controller.ts?ref_type=heads#L49
+Метод окончания турнира в турнирном сервисе - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]rvices/fast-flow/tournament.ending.service.ts?ref_type=heads
+Выплата приза турнира - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]rvices/fast-flow/tournament.ending.service.ts?ref_type=heads
+Получаем от БЧ-сервиса событие на регистрацию участника - https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/to[…]rnaments/controllers/tournament.controller.ts?ref_type=heads

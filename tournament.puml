@@ -1,0 +1,68 @@
+' https://plantuml.com/sequence-diagram#425ba4350c02142c
+' https://entangle.atlassian.net/wiki/spaces/ENTN/pages/264339472/Team+tournament+single+chain
+
+@startuml registration
+!pragma teoz true
+title Registration
+actor Participant
+participant Frontend
+collections Backend
+collections GameAPI
+database Blockchain
+group Participant registration
+    Participant -> Frontend: Join request
+    & Frontend -> Blockchain: register transaction
+    & Blockchain -> Blockchain: registered\nevent
+    loop
+        Blockchain <-> Backend: read registered event
+        ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/controllers/tournament.controller.ts?ref_type=heads#L216
+    end
+    Backend -> Frontend: registered\nnotification
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/tournament.participants-register.service.ts?ref_type=heads#L118
+    & Frontend -> Participant: registered\npopup
+' end
+
+' loop each tournament
+    Backend <-> Backend: get tournament\ndetails
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/tournament.starting.service.ts?ref_type=heads#L64
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/consumers/tournaments.update-by-bc.consumer.ts?ref_type=heads#L72
+end
+note over Backend, Blockchain: start conditions are met
+
+group Tournament start
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/tournament.starting.service.ts?ref_type=heads#L147
+    Backend -> Blockchain: mark tournament\nas started
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/tournament.starting.service.ts?ref_type=heads#L90
+    & Blockchain -> Blockchain: started\nevent
+    Blockchain <-> Backend: read started event
+
+    Backend -> Frontend: started\nnotification
+    & Frontend -> Participant: started\npopup
+end
+
+loop each match
+    Backend o-[#red]> GameAPI: startGame
+    'https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/matchmaking.creation.service.ts?ref_type=heads#L223
+    GameAPI -> Backend: gameStart
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/controllers/match.controller.ts?ref_type=heads#L42
+    GameAPI -> Backend: gameEnd
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/controllers/match.controller.ts?ref_type=heads#L34
+    & Backend <- Backend: check finish\nconditions
+end
+
+note over Backend, Blockchain: finish conditions are met
+' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/matchmaking.ending.service.ts?ref_type=heads#L184
+
+
+group Tournament finish
+    Backend o-> Blockchain: mark tournament\nas finished
+    ' https://gitlab.ent-dx.com/disruption/dx-blockchain-service/-/blob/dev/src/controllers/call.controller.ts?ref_type=heads#L49
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/tournament.ending.service.ts?ref_type=heads#L140
+    & Blockchain -> Blockchain: finished\nevent
+    ' Blockchain -[#red]> Backend: read finished event
+    & Backend -> Frontend: finished\nnotification
+    & Frontend -> Participant: finished\npopup
+    Backend -> Blockchain: payout
+    ' https://gitlab.ent-dx.com/disruption/dx-tournaments-service/-/blob/dev/src/modules/tournaments/services/fast-flow/tournament.ending.service.ts?ref_type=heads#L76
+end
+@enduml
