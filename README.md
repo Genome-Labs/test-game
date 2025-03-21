@@ -8,5 +8,6 @@ db.game.updateOne({_id: "game_id_1"}, {$set: {visible: false, active: true}})
 
 Please change logins before running the command
 ```
-npx ts-node src/auth.ts dev_login1 dev_login2
+npx ts-node src/auth.ts dev_login18 dev_login22
 ```
+npm run dev | tee run_dev_8.log

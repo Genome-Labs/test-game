@@ -20,7 +20,7 @@ export type TeamScore = z.infer<typeof TeamScore>;
 export const GameEndedEvent = z.object({
     matchId: MatchId,
     tournamentId: z.string().optional(),
-    winners: z.record(z.number(), TeamScore),
+    winners: z.array(TeamScore),
 });
 export type GameEndedEvent = z.infer<typeof GameEndedEvent>;
 export const GameStartedEvent = z.object({
@@ -42,7 +42,7 @@ export type Team = z.infer<typeof Team>;
 export const StartGamePayload = z.object({
     matchId: MatchId,
     tournamentId: TournamentId.optional(),
-    backUrl: z.string().url().optional(),
+    backUrl: z.string().optional(),
     rivals: Team.array(),
 });
 export type StartGamePayload = z.infer<typeof StartGamePayload>;
