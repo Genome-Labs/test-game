@@ -1,9 +1,9 @@
 ' https://plantuml.com/sequence-diagram#425ba4350c02142c
 ' https://entangle.atlassian.net/wiki/spaces/ENTN/pages/264339472/Team+tournament+single+chain
 
-@startuml registration
+@startuml Tournament flow v0.0
 !pragma teoz true
-title Registration
+title Tournament flow v0.0
 actor Participant
 participant Frontend
 collections Backend

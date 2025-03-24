@@ -19,3 +19,8 @@ if(process.argv.length > 2) {
         console.log(userTokenUrl(process.argv[i]))
     }
 }
+
+jwt.sign({
+    gameId: GAME_ID,
+    playerId: userId
+}, GAME_SECRET, { algorithm: 'HS256' });
