@@ -50,7 +50,9 @@ All game interactions are done via single wss connection. The only other point o
 ```js
 jwt.sign({
     gameId: GAME_ID,
-    playerId: userId
+    playerId: userId,
+    username: username, //optional
+    nickname: username  //optional, acts the same as username
 }, GAME_SECRET, { algorithm: 'HS256' });
 ```
 
