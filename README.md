@@ -11,10 +11,12 @@ Links are:
 # dev stage
 GAME_API_URL=wss://dev.api.zerosum.world
 PLATFORM_URL=https://dev.genomeprotocol.com
+POST_API_URL=https://dev.api.zerosum.world/external
 
 #test stage
-GAME_API_URL=ws://dev.api.zerosum.world:8010
+GAME_API_URL=ws://test.api.zerosum.world:8010
 PLATFORM_URL=https://test.genomeprotocol.com
+POST_API_URL=https://test.api.zerosum.world/external
 
 GAME_API_PATH=/3010
 
@@ -133,3 +135,16 @@ When game should be started - game will get a `startGame` event for each match
   tournamentId?: string;
   gameServerId?: string;
 }
+
+### POST interactions
+
+Pretty close to WSS interactions, except all data exchange is done via POST HTTP requests. All requests should be done / checked with Bearer Authorization header, token should be generated the same way like WSS interactions. Data types sent are the same as for WSS interactions.
+
+
+'schedule-load' and 'start-game' requests are sent by Genome to game. Also, game base url should be given to Genome team.
+
+'game-started', 'game-ended' and 'game-cancelled' should be sent from game to Genome with the POST_API_URL as a base url for requests
+
+
+[Usage example for nest.js ](test.controller.ts)
+
