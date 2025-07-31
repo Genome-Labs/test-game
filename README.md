@@ -58,7 +58,14 @@ jwt.sign({
 }, GAME_SECRET, { algorithm: 'HS256' });
 ```
 
-### WSS interactions
+### Quest room points / badges
+Right now we have only manual points integration. It means that we will add all quests needed from Genome side. From game side some user statistics REST API endpoint should be done with all information required. E.g. for games played count quest (user played 100 games) we need to see number number of games played in this API.
+
+### Tournaments integration
+
+We have two options for connecting games to tournaments API - websocket and bi-directional HTTP POST requests methods.
+
+#### WSS interactions
 You have to connect to GAME_API_URL with  auth token like this
 ```js
 jwt.encode({"gameId": GAME_ID}, GAME_SECRET, algorithm="HS256")
@@ -136,7 +143,7 @@ When game should be started - game will get a `startGame` event for each match
   gameServerId?: string;
 }
 
-### POST interactions
+#### POST interactions
 
 Pretty close to WSS interactions, except all data exchange is done via POST HTTP requests. All requests should be done / checked with Bearer Authorization header, token should be generated the same way like WSS interactions. Data types sent are the same as for WSS interactions.
 
