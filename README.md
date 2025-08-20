@@ -63,7 +63,32 @@ Right now we have only manual points integration. It means that we will add all 
 
 ### Tournaments integration
 
-We have two options for connecting games to tournaments API - websocket and bi-directional HTTP POST requests methods.
+We have three options for connecting games to tournaments API - leaderboard, websocket and bi-directional HTTP POST requests methods.
+
+#### Leaderboard tournaments
+It's all about some periodical tournaments (e.g. daily). Users join the tournament and play games on your platform during the period. The winner is the player, that takes maximum amount of points.
+
+Here we'll need a REST API endpoint for score collecting from your side. 
+Request uri will look like `?startTime=1755701280&endTime=1755702180&userId[]=11&userId[]=12`. Paramenters startTime and endTime are UTC UNIX timestamps. userId - is an array of your users' ids.
+
+Response should look like
+```json
+{
+  "data": [
+    {
+      "id": 12,
+      "username": "Grilllllll",
+      "high_score": 105
+    },
+    {
+      "id": 11,
+      "username": "chimiyo",
+      "high_score": 59
+    }
+  ]
+}
+```
+Results should be sorted by high_score field DESC. The are displayed at the tournament page. At the end of the tournament the first-row player will get the reward.
 
 #### WSS interactions
 You have to connect to GAME_API_URL with  auth token like this
